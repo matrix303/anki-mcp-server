@@ -270,7 +270,32 @@ ngrok http 3000
 
 **Security note:** Anyone with your ngrok URL can access your Anki, so keep that URL private!
 
-### Option 4: Manual Installation from Source (Local Mode)
+### Option 4: Docker Deployment (Remote Mode)
+
+For containerized deployments and production environments:
+
+```bash
+# Build and run with Docker Compose
+docker compose -f docker-compose.prod.yml up -d
+
+# Or build manually
+docker build -t anki-mcp-server .
+docker run -p 3000:3000 -e ANKI_CONNECT_URL=http://host.docker.internal:8765 anki-mcp-server
+```
+
+**Docker deployment includes:**
+- Multi-stage build for optimal image size
+- Production-ready configuration
+- Health checks
+- Automatic restarts
+
+**Note:** When running in Docker, set `ANKI_CONNECT_URL` to:
+- `http://host.docker.internal:8765` (Windows/Mac)
+- Your host machine's IP on Linux (e.g., `http://192.168.1.100:8765`)
+
+See [`docker-compose.prod.yml`](./docker-compose.prod.yml) for complete configuration options.
+
+### Option 5: Manual Installation from Source (Local Mode)
 
 For development or advanced usage:
 
@@ -766,6 +791,17 @@ If you're exploring Anki MCP integrations, here are other projects in this space
 - **Scalability**: Can easily grow from basic tools to complex workflows
 
 **Use case**: If you need a solid foundation for building advanced Anki integrations or plan to extend functionality significantly, this project's architectural approach makes it easier to maintain and scale over time.
+
+## Documentation
+
+### Repository Management & Deployment
+
+- **[Repository Management Guide](./docs/REPOSITORY_MANAGEMENT.md)** - Should you use git submodules? How to structure your project? This guide answers common questions about managing anki-mcp-server in different scenarios.
+- **[Docker Deployment Guide](./docs/DOCKER_DEPLOYMENT.md)** - Complete guide to deploying anki-mcp-server using Docker for production environments, including Docker Compose configuration, reverse proxy setup, and security best practices.
+
+### Project Information
+
+- **[CLAUDE.md](./CLAUDE.md)** - Quick reference for working with this codebase (architecture, testing, release process)
 
 ## Useful Links
 
