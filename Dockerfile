@@ -1,16 +1,27 @@
 # Multi-stage Dockerfile for anki-mcp-server HTTP mode
 # This allows deployment of anki-mcp-server as a containerized service
+# Note: Using debian-slim and upgrading npm due to known npm issues
 
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
+
+# Upgrade npm to latest version to avoid known bugs
+RUN npm install -g npm@latest
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for build)
-RUN npm ci
+RUN npm install --no-audit --no-fund
 
 # Copy source code
 COPY . .
@@ -19,15 +30,18 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 
 WORKDIR /app
+
+# Upgrade npm to latest version
+RUN npm install -g npm@latest
 
 # Copy package files
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --no-audit --no-fund
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist

@@ -1,0 +1,35 @@
+# Simple Dockerfile that assumes dist/ is already built
+# Build locally first: npm run build
+# Then: docker build -f Dockerfile.simple -t anki-mcp-server .
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm install --omit=dev --loglevel verbose
+
+# Copy pre-built application
+COPY dist ./dist
+COPY bin ./bin
+
+# Copy necessary files
+COPY README.md LICENSE ./
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV ANKI_CONNECT_URL=http://host.docker.internal:8765
+
+# Expose the HTTP port
+EXPOSE 3000
+
+# Health check (checks if server is responding)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/', (r) => process.exit(r.statusCode < 500 ? 0 : 1))" || exit 1
+
+# Run the HTTP server
+CMD ["node", "dist/main-http.js", "--port", "3000", "--host", "0.0.0.0"]

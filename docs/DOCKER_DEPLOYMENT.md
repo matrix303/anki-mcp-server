@@ -2,10 +2,41 @@
 
 This guide explains how to deploy anki-mcp-server using Docker for production environments.
 
+## ⚠️ Known Issue: Docker Build from Source
+
+There's a known npm bug that can cause `npm install` to hang during Docker builds.
+
+**Recommended Workaround:** Build and run locally with npm/npx instead of Docker:
+
+```bash
+# Option 1: Run directly with npm
+npm install
+npm run build  
+npm run start:prod:http
+
+# Option 2: Install globally
+npm install -g @ankimcp/anki-mcp-server
+ankimcp
+
+# Option 3: Use npx (no installation needed)
+npx @ankimcp/anki-mcp-server
+```
+
+**For Docker enthusiasts:** The Dockerfiles are provided as a reference. To use them:
+1. Comment out `dist/` in `.dockerignore`
+2. Build locally: `npm run build`
+3. Build Docker image: `docker build -f Dockerfile.simple -t anki-mcp-server .`
+
+The project team is monitoring the npm bug. Once resolved, Docker builds from source will work seamlessly.
+
 ## Quick Start
 
 ```bash
-# Start the server
+# Build locally first
+npm run build
+
+# Start the server with Docker Compose
+docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 
 # View logs
@@ -17,7 +48,7 @@ docker compose -f docker-compose.prod.yml down
 
 ## Building the Image
 
-### Using Docker Compose (Recommended)
+### Method 1: Pre-build Locally (Recommended)
 
 ```bash
 docker compose -f docker-compose.prod.yml build
