@@ -1,0 +1,54 @@
+# Docker Compose for running anki-mcp-server in production
+# This is separate from the .docker/ folder which is for E2E testing
+
+services:
+  anki-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple  # Uses pre-built dist/ folder
+    ports:
+      - "3000:3000"
+    environment:
+      # Point to AnkiConnect on host machine
+      # On Linux: use host.docker.internal or your machine's IP
+      # On Windows/Mac: host.docker.internal should work
+      - ANKI_CONNECT_URL=http://host.docker.internal:8765
+      - PORT=3000
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => process.exit(r.statusCode < 500 ? 0 : 1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+# Alternative: If you want to run both Anki and anki-mcp-server together
+# Uncomment the section below and comment out the anki-mcp-server service above
+#
+# services:
+#   anki:
+#     image: ghcr.io/ankimcp/headless-anki:x11-vnc-v1.1.0
+#     volumes:
+#       - anki-data:/home/anki/.local/share/Anki2
+#     ports:
+#       - "8765:8765"   # AnkiConnect API
+#       - "5900:5900"   # VNC (for debugging)
+#     restart: unless-stopped
+#
+#   anki-mcp-server:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - ANKI_CONNECT_URL=http://anki:8765
+#       - PORT=3000
+#       - NODE_ENV=production
+#     depends_on:
+#       - anki
+#     restart: unless-stopped
+#
+# volumes:
+#   anki-data:

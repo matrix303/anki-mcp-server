@@ -1,0 +1,62 @@
+# Node modules (will be installed during build)
+node_modules/
+npm-debug.log
+
+# Build artifacts
+dist/
+coverage/
+*.mcpb
+*.tgz
+
+# Test files
+test/
+*.spec.ts
+*.test.ts
+jest.config.js
+test/e2e/
+
+# Development files
+.git/
+.github/
+.husky/
+.vscode/
+*.log
+
+# Documentation and examples
+docs/
+*.md
+!README.md
+!LICENSE
+
+# Development configuration
+.prettierrc
+.eslintrc*
+eslint.config.mjs
+tsconfig*.json
+mcp-inspector-config.json
+llms-full.txt
+
+# Docker files (except Dockerfile)
+.docker/
+docker-compose*.yml
+!docker-compose.prod.yml
+
+# Temporary files
+tmp/
+.DS_Store
+*.swp
+*.swo
+*~
+
+# CI/CD
+.github/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Environment files (if any)
+.env
+.env.local
+.env*.local
