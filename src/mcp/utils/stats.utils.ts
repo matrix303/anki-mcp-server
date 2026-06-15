@@ -285,9 +285,7 @@ export function calculateStreak(
   }
 
   // Sort by date descending (most recent first)
-  const sorted = [...reviewsByDay].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+  const sorted = [...reviewsByDay].sort((a, b) => b.date.localeCompare(a.date));
 
   let streak = 0;
   // Use UTC date string to match ISO date strings in review data

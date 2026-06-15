@@ -66,7 +66,7 @@ export class PresentCardTool {
       const cardType = getCardType(card.type);
 
       const isClozed = card.modelName.toLowerCase().includes("cloze");
-      const rawTextField = card.fields["Text"]?.value;
+      const rawTextField = card.fields?.["Text"]?.value;
 
       const front =
         isClozed && rawTextField
