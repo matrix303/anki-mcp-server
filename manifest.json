@@ -142,7 +142,7 @@
     },
     {
       "name": "cardSuspension",
-      "description": "Suspend or unsuspend Anki cards, controlling whether they appear in review. Actions: suspend (remove cards from the review queue), unsuspend (return cards to the review queue). Operates on card IDs from notesInfo's cards field"
+      "description": "Suspend or unsuspend Anki cards, controlling whether they appear in review. Actions: suspend (remove cards from the review queue, requires confirmSuspend: true), unsuspend (return cards to the review queue). Operates on card IDs from notesInfo's cards field"
     },
     {
       "name": "deck_stats",

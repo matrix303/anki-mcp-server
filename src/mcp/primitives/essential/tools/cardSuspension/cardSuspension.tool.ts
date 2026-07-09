@@ -7,8 +7,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from "@/mcp/utils/anki.utils";
-import { suspend, type SuspendResult } from "./actions/suspend.action";
-import { unsuspend, type UnsuspendResult } from "./actions/unsuspend.action";
+import {
+  setCardSuspension,
+  type SetSuspensionResult,
+} from "./actions/setSuspension.action";
 
 /**
  * Unified card suspension tool for managing a card's review-queue membership
@@ -26,7 +28,7 @@ export class CardSuspensionTool {
   @Tool({
     name: "cardSuspension",
     description: `Suspend or unsuspend Anki cards, controlling whether they appear in review. Supports two actions:
-- suspend: Remove specified cards from the review queue (cards: number[])
+- suspend: Remove specified cards from the review queue (cards: number[], confirmSuspend: true). This pulls cards out of the user's live review queue - only call it if the user explicitly asked to suspend/pause/skip these cards. Requires confirmSuspend: true or the call is rejected.
 - unsuspend: Return specified cards to the review queue (cards: number[])
 
 Operates on card IDs, not note IDs. Get card IDs for a note from notesInfo's "cards" field.`,
@@ -35,11 +37,17 @@ Operates on card IDs, not note IDs. Get card IDs for a note from notesInfo's "ca
         .enum(["suspend", "unsuspend"])
         .describe("The suspension action to perform"),
       cards: z
-        .array(z.coerce.number())
+        .array(z.coerce.number().int().positive())
         .min(1)
         .max(100)
         .describe(
           "Array of card IDs to modify (max 100 at once). Get these from notesInfo's cards field.",
+        ),
+      confirmSuspend: z
+        .boolean()
+        .optional()
+        .describe(
+          "[suspend only] Must be explicitly set to true to suspend cards - this removes them from the user's live review queue. Not required for unsuspend.",
         ),
     }),
   })
@@ -47,31 +55,26 @@ Operates on card IDs, not note IDs. Get card IDs for a note from notesInfo's "ca
     params: {
       action: "suspend" | "unsuspend";
       cards: number[];
+      confirmSuspend?: boolean;
     },
     context: Context,
   ) {
     try {
       this.logger.log(`Executing card suspension action: ${params.action}`);
 
-      let result: SuspendResult | UnsuspendResult;
+      if (params.action === "suspend" && params.confirmSuspend !== true) {
+        return createErrorResponse(new Error("Suspension not confirmed"), {
+          requestedCards: params.cards,
+          hint: "Set confirmSuspend to true to remove these cards from the review queue",
+        });
+      }
 
       await context.reportProgress({ progress: 25, total: 100 });
 
-      switch (params.action) {
-        case "suspend":
-          result = await suspend({ cards: params.cards }, this.ankiClient);
-          break;
-
-        case "unsuspend":
-          result = await unsuspend({ cards: params.cards }, this.ankiClient);
-          break;
-
-        default: {
-          // TypeScript exhaustiveness check
-          const _exhaustive: never = params.action;
-          throw new Error(`Unknown action: ${_exhaustive}`);
-        }
-      }
+      const result: SetSuspensionResult = await setCardSuspension(
+        { cards: params.cards, suspended: params.action === "suspend" },
+        this.ankiClient,
+      );
 
       await context.reportProgress({ progress: 100, total: 100 });
 
