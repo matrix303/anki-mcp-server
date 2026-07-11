@@ -25,7 +25,7 @@ export class NotesInfoTool {
       "Use this after findNotes to get complete note data. Includes CSS for proper rendering awareness.",
     parameters: z.object({
       notes: z
-        .array(z.number())
+        .array(z.coerce.number())
         .min(1)
         .max(100)
         .describe(

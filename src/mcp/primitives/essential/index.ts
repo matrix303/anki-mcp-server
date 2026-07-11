@@ -35,6 +35,7 @@ export { DeleteNotesTool } from "./tools/delete-notes.tool";
 export { MediaActionsTool } from "./tools/mediaActions";
 export { GetTagsTool } from "./tools/get-tags.tool";
 export { TagActionsTool } from "./tools/tagActions";
+export { CardSuspensionTool } from "./tools/cardSuspension";
 export { DeckStatsTool } from "./tools/deck-stats";
 export { CollectionStatsTool } from "./tools/collection-stats";
 export { ReviewStatsTool } from "./tools/review-stats";
@@ -69,6 +70,7 @@ import { DeleteNotesTool } from "./tools/delete-notes.tool";
 import { MediaActionsTool } from "./tools/mediaActions";
 import { GetTagsTool } from "./tools/get-tags.tool";
 import { TagActionsTool } from "./tools/tagActions";
+import { CardSuspensionTool } from "./tools/cardSuspension";
 import { DeckStatsTool } from "./tools/deck-stats";
 import { CollectionStatsTool } from "./tools/collection-stats";
 import { ReviewStatsTool } from "./tools/review-stats";
@@ -99,6 +101,7 @@ export const ESSENTIAL_MCP_TOOLS = [
   MediaActionsTool,
   GetTagsTool,
   TagActionsTool,
+  CardSuspensionTool,
   DeckStatsTool,
   CollectionStatsTool,
   ReviewStatsTool,

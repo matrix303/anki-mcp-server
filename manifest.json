@@ -141,6 +141,10 @@
       "description": "Manage tags on Anki notes. Actions: addTags (add tags to notes), removeTags (remove tags from notes), replaceTags (rename a tag), clearUnusedTags (remove orphaned tags). Use getTags to discover existing tags first"
     },
     {
+      "name": "cardSuspension",
+      "description": "Suspend or unsuspend Anki cards, controlling whether they appear in review. Actions: suspend (remove cards from the review queue, requires confirmSuspend: true), unsuspend (return cards to the review queue). Operates on card IDs from notesInfo's cards field"
+    },
+    {
       "name": "deck_stats",
       "description": "Get comprehensive statistics for a single deck including card counts, ease factor distribution, and interval distribution"
     },
